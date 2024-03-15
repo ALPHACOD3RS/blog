@@ -1,0 +1,36 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Posts</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <!-- Include header content -->
+      <!-- You can include the header using JavaScript or server-side templating -->
+      <script src="header.js"></script>
+    </header>
+    <main>
+      <h1>My Posts</h1>
+      <!-- Display user's posts here -->
+      <div id="user-posts"></div>
+      <!-- Form to add a new post -->
+      <form id="add-post-form">
+        <input
+          type="text"
+          id="post-title"
+          placeholder="Enter post title"
+          required
+        />
+        <textarea
+          id="post-content"
+          placeholder="Enter post content"
+          required
+        ></textarea>
+        <button type="submit">Add Post</button>
+      </form>
+    </main>
+    <script src="js/view-post.js"></script>
+  </body>
+</html>

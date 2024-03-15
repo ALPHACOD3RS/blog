@@ -1,0 +1,139 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Post Detail</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Blog Post Detail</h1>
+    </header>
+    <main>
+      <article class="post-detail">
+        <h2 id="post-title">Blog Post Title</h2>
+
+        <div class="content" id="post-content">
+          <!-- Post content will be dynamically inserted here -->
+        </div>
+        <p id="post-author">Author: John Doe</p>
+        <p id="post-date">Date: January 1, 2024</p>
+      </article>
+      <section class="comments" id="comments-section">
+        <h3>Comments</h3>
+        <!-- Comments will be dynamically inserted here -->
+      </section>
+
+      <section class="add-comment">
+        <h3>Add a Comment</h3>
+        <form id="comment-form" action="#" method="POST">
+          <div>
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment" rows="4" required></textarea>
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2024 BlogApp</p>
+    </footer>
+    <script src="js/auth.js"></script>
+    <script>
+      window.onload = async function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get("id");
+        if (postId) {
+          try {
+            const postResponse = await fetch(`${apiUrl}/blog-posts/${postId}`);
+            if (postResponse.ok) {
+              const post = await postResponse.json();
+              document.getElementById("post-title").innerText = post.title;
+              document.getElementById(
+                "post-author"
+              ).innerText = `Author: User ${post.user_id}`;
+              document.getElementById(
+                "post-date"
+              ).innerText = `Date: ${new Date().toLocaleDateString()}`;
+              document.getElementById("post-content").innerHTML = post.content;
+            } else {
+              console.error("Failed to fetch blog post:", postResponse.status);
+            }
+
+            const commentsResponse = await fetch(
+              `${apiUrl}/blog-posts/${postId}/comments`
+            );
+            if (commentsResponse.ok) {
+              const comments = await commentsResponse.json();
+              const commentsContainer = document.querySelector(".comments");
+              commentsContainer.innerHTML = ""; // Clear previous comments
+              comments.forEach((comment) => {
+                const commentDiv = document.createElement("div");
+                commentDiv.classList.add("comment");
+                commentDiv.innerHTML = `<p><strong>User:</strong> ${comment.content}</p>`;
+                commentsContainer.appendChild(commentDiv);
+              });
+            } else {
+              console.error("Failed to fetch comments:", response.status);
+            }
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+      };
+
+      document
+        .getElementById("comment-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const commentText = document.getElementById("comment").value;
+          const postId = new URLSearchParams(window.location.search).get("id");
+          try {
+            const response = await fetch(
+              `${apiUrl}/blog-posts/${postId}/comments`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  content: commentText,
+                }),
+              }
+            );
+            if (response.ok) {
+              // Clear the form fields
+              document.getElementById("comment").value = "";
+              // Reload the comments
+              const commentsSection =
+                document.getElementById("comments-section");
+              commentsSection.innerHTML = "<h3>Comments</h3>";
+              const commentsResponse = await fetch(
+                `${apiUrl}/blog-posts/${postId}/comments`
+              );
+              if (commentsResponse.ok) {
+                const comments = await commentsResponse.json();
+                const commentsContainer = document.querySelector(".comments");
+                commentsContainer.innerHTML = ""; // Clear previous comments
+                comments.forEach((comment) => {
+                  const commentDiv = document.createElement("div");
+                  commentDiv.classList.add("comment");
+                  commentDiv.innerHTML = `<p><strong>User:</strong> ${comment.content}</p>`;
+                  commentsContainer.appendChild(commentDiv);
+                });
+              } else {
+                console.error(
+                  "Failed to fetch comments:",
+                  commentsResponse.status
+                );
+              }
+            } else {
+              console.error("Failed to submit comment:", response.status);
+            }
+          } catch (error) {
+            console.error("Error submitting comment:", error);
+          }
+        });
+    </script>
+  </body>
+</html>
